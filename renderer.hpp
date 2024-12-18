@@ -2,8 +2,10 @@
 
 class Renderer {
     public:
+    Shader RSO;
     unsigned int VBO, VAO, IBO;
-    //Shader RSO;
+    size_t TAC;
     Renderer();
-    void BindBufferData(std::vector<void> vertet);
+    void BindBufferData(std::vector<float> vertices, std::vector<unsigned int> indices);
+    void Render();
 };

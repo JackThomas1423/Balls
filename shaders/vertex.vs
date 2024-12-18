@@ -7,6 +7,6 @@ uniform vec2 translation;
 out vec3 vertex_color;
 
 void main() {
-    gl_Position = vec4(position.x, position.y, 0.0, 1.0) + vec4(translation,0.0,0.0);
+    gl_Position = vec4(position + translation, 0.0, 1.0);
     vertex_color = color;
 }
