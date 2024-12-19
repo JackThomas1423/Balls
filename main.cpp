@@ -66,16 +66,14 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         rend.RSO.use();
+        rend.RSO.setVector2("translation",n,0.0f);
         rend.Render();
 
-        n += 0.0001f;
+        n += 0.0005f;
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-
+    
     glfwTerminate();
     return 0;
 }

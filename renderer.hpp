@@ -6,6 +6,7 @@ class Renderer {
     unsigned int VBO, VAO, IBO;
     size_t TAC;
     Renderer();
+    ~Renderer();
     void BindBufferData(std::vector<float> vertices, std::vector<unsigned int> indices);
     void Render();
 };

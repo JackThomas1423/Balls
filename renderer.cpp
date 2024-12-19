@@ -10,6 +10,13 @@ Renderer::Renderer() : RSO("shaders/vertex.vs","shaders/fragment.fs") {
     glBindVertexArray(VAO);
 }
 
+Renderer::~Renderer() {
+    RSO.~Shader();
+
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+}
+
 void Renderer::BindBufferData(std::vector<float> vertices, std::vector<unsigned int> indices) {
     TAC = vertices.size() / 5;
 

@@ -1,5 +1,9 @@
 #include "shader.hpp"
 
+Shader::~Shader() {
+    glDeleteProgram(ID);
+}
+
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
     std::string vertexCode;
