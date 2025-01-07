@@ -1,4 +1,5 @@
 #include "shader.hpp"
+#include <regex>
 
 Shader::~Shader() {
     glDeleteProgram(ID);
@@ -66,8 +67,17 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
         glGetProgramInfoLog(ID, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
+
+    // lex file
+
+    std::regex regexp("vec[0-9]");
+    std::smatch m; 
+    std::regex_search(vertexCode, m, regexp); 
+    for (auto x : m) {
+        std::cout << x << std::endl;
+    }
   
-    // delete the shaders as they're linked into our program now and no longer necessary
+    // delete the shaders
     glDeleteShader(vertex);
     glDeleteShader(fragment);
 }

@@ -10,7 +10,6 @@ class Vec2 {
 class Object {
     public:
     Vec2 position;
-    Vec2 velocity;
     Renderer renderer;
     Object();
     void translate(Vec2 translation);
