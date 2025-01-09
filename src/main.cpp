@@ -40,7 +40,7 @@ int main()
         return -1;
     }
 
-    Shader main_shader("shaders/vertex.vs","shaders/fragment.fs");
+    //Shader main_shader("shaders/vertex.vs","shaders/fragment.fs");
 
     std::vector<float> vertices = {
         -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,  

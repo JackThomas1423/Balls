@@ -68,15 +68,19 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
-    // lex file
-
-    std::regex regexp("vec[0-9]");
-    std::smatch m; 
-    std::regex_search(vertexCode, m, regexp); 
-    for (auto x : m) {
-        std::cout << x << std::endl;
+    std::stringstream vc(vertexCode);
+    std::string buffer;
+    std::regex pattern("layout ?[(] ?location ?= ?([0-9]) ?[)] in vec([0-9]) [a-zA-Z0-9]+;");
+    std::smatch m;
+    while (std::getline(vc, buffer, '\n')) {
+        if(std::regex_search(buffer, m, pattern)) {
+            for (auto x : m) {
+                std::cout << x << " ";
+            }
+            std::cout << "\n";
+        }
     }
-  
+
     // delete the shaders
     glDeleteShader(vertex);
     glDeleteShader(fragment);
