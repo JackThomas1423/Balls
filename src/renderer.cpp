@@ -1,4 +1,5 @@
 #include <vector>
+#include <numeric>
 #include "shader.hpp"
 #include "renderer.hpp"
 
@@ -18,7 +19,7 @@ Renderer::~Renderer() {
 }
 
 void Renderer::BindBufferData(std::vector<float> vertices, std::vector<unsigned int> indices) {
-    TAC = vertices.size() / 5;
+    TAC = vertices.size() / RSO.bitWidth();
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);

@@ -1,4 +1,5 @@
 #include "shader.hpp"
+#include <string>
 #include <regex>
 
 Shader::~Shader() {
@@ -72,12 +73,12 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     std::string buffer;
     std::regex pattern("layout ?[(] ?location ?= ?([0-9]) ?[)] in vec([0-9]) [a-zA-Z0-9]+;");
     std::smatch m;
+
     while (std::getline(vc, buffer, '\n')) {
         if(std::regex_search(buffer, m, pattern)) {
-            for (auto x : m) {
-                std::cout << x << " ";
-            }
-            std::cout << "\n";
+            std::string last_token;
+            for (auto x : m) {last_token = x;}
+            bit_width.push_back(std::stoi(last_token.c_str()));
         }
     }
 
@@ -105,4 +106,12 @@ void Shader::setFloat(const std::string &name, float value) const
 void Shader::setVector2(const std::string &name, float x, float y) const
 {
     glUniform2f(glGetUniformLocation(ID,name.c_str()),x,y);
+}
+
+int Shader::bitWidth()
+{
+    int vertex_width = 0;
+    for(std::vector<int>::const_iterator it = bit_width.begin(); it != bit_width.end(); ++it)
+        vertex_width += *it;
+    return vertex_width;
 }
