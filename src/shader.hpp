@@ -19,7 +19,6 @@ private:
 public:
 
     Shader(const char* vertexPath, const char* fragmentPath);
-    ~Shader();
     
     void use();
     // utility uniform functions
@@ -29,6 +28,7 @@ public:
     void setVector2(const std::string &name, float x, float y) const;
 
     int bitWidth();
+    int bitSize(const size_t index);
 };
   
 #endif

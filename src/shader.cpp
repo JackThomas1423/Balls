@@ -2,10 +2,6 @@
 #include <string>
 #include <regex>
 
-Shader::~Shader() {
-    glDeleteProgram(ID);
-}
-
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
     std::string vertexCode;
@@ -114,4 +110,10 @@ int Shader::bitWidth()
     for(std::vector<int>::const_iterator it = bit_width.begin(); it != bit_width.end(); ++it)
         vertex_width += *it;
     return vertex_width;
+}
+
+int Shader::bitSize(const size_t index)
+{
+    int segment = bit_width[index];
+    return segment;
 }
