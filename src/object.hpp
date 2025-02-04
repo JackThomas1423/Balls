@@ -13,4 +13,5 @@ class Object {
     Renderer renderer;
     Object();
     void translate(Vec2 translation);
+    void rotate();
 };

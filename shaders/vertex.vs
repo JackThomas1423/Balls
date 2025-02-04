@@ -7,6 +7,11 @@ uniform vec2 translation;
 out vec3 vertex_color;
 
 void main() {
-    gl_Position = vec4(position + translation, 0.0, 1.0);
+    mat2 rot = mat2(
+        1, tan(translation.x),
+        tan(translation.x), 1
+    );
+
+    gl_Position = vec4(position * rot, 0.0, 1.0);
     vertex_color = color;
 }

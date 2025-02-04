@@ -67,15 +67,35 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 
     std::stringstream vc(vertexCode);
     std::string buffer;
-    std::regex pattern("layout ?[(] ?location ?= ?([0-9]) ?[)] in vec([0-9]) [a-zA-Z0-9]+;");
+    std::regex pattern("layout ?[(] ?location ?= ?([0-9]) ?[)] in (vec[0-9]|float|int) [a-zA-Z0-9]+;");
     std::smatch m;
 
+    int line_index = 0;
     while (std::getline(vc, buffer, '\n')) {
         if(std::regex_search(buffer, m, pattern)) {
-            std::string last_token;
-            for (auto x : m) {last_token = x;}
-            bit_width.push_back(std::stoi(last_token.c_str()));
+            std::string tokens[3];
+            int slot = 0;
+            for (auto x : m) {
+                tokens[slot] = x;
+                ++slot;
+            }
+            if (tokens[2] == "vec2") {
+                bit_width.push_back(2);
+            } else if (tokens[2] == "vec3") {
+                bit_width.push_back(3);
+            } else if (tokens[2] == "vec4") {
+                bit_width.push_back(4);
+            } else if (tokens[2] == "float") {
+                bit_width.push_back(1);
+            } else if (tokens[2] == "int") {
+                bit_width.push_back(1);
+            } else {
+                std::cout << "ERROR::SHADER::VERTEX::INTERPRETATION_FAILED" << std::endl;
+                std::cout << "ERROR: " << line_index << ": type " << tokens[2] << " not yet supported" << std::endl;
+                exit(1);
+            }
         }
+        ++line_index;
     }
 
     // delete the shaders
