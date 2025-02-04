@@ -80,15 +80,15 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
                 ++slot;
             }
             if (tokens[2] == "vec2") {
-                bit_width.push_back(2);
+                bit_width.push_back(ShaderType::Vec2);
             } else if (tokens[2] == "vec3") {
-                bit_width.push_back(3);
+                bit_width.push_back(ShaderType::Vec3);
             } else if (tokens[2] == "vec4") {
-                bit_width.push_back(4);
+                bit_width.push_back(ShaderType::Vec4);
             } else if (tokens[2] == "float") {
-                bit_width.push_back(1);
+                bit_width.push_back(ShaderType::Float);
             } else if (tokens[2] == "int") {
-                bit_width.push_back(1);
+                bit_width.push_back(ShaderType::Int);
             } else {
                 std::cout << "ERROR::SHADER::VERTEX::INTERPRETATION_FAILED" << std::endl;
                 std::cout << "ERROR: " << line_index << ": type " << tokens[2] << " not yet supported" << std::endl;
@@ -127,13 +127,29 @@ void Shader::setVector2(const std::string &name, float x, float y) const
 int Shader::bitWidth()
 {
     int vertex_width = 0;
-    for(std::vector<int>::const_iterator it = bit_width.begin(); it != bit_width.end(); ++it)
-        vertex_width += *it;
+    for (const ShaderType& type : bit_width)
+        vertex_width += static_cast<int>(type);
     return vertex_width;
 }
 
-int Shader::bitSize(const size_t index)
+size_t Shader::bitSize(const size_t index)
 {
-    int segment = bit_width[index];
-    return segment;
+    ShaderType segment = static_cast<ShaderType>(bit_width[index]);
+    switch (segment)
+    {
+    case ShaderType::Int: return 1;
+    case ShaderType::Float: return 1;
+    case ShaderType::Vec2: return 2;
+    case ShaderType::Vec3: return 3;
+    case ShaderType::Vec4: return 4;
+    default:
+        std::cout << "ERROR::SHADER::VERTEX::INTERPRETATION_FAILED" << std::endl;
+        std::cout << "ERROR: unknown ShaderType size found" << std::endl;
+        exit(1);
+        break;
+    }
+}
+
+ShaderType Shader::getShaderType(size_t index) const {
+    return bit_width[index];
 }

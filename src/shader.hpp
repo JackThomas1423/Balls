@@ -10,11 +10,19 @@
 #include <sstream>
 #include <iostream>
 
+enum class ShaderType {
+    Int,
+    Float,
+    Vec2,
+    Vec3,
+    Vec4,
+};
+
 class Shader
 {
 private:
     unsigned int ID;
-    std::vector<int> bit_width;
+    std::vector<ShaderType> bit_width;
 public:
 
     Shader(const char* vertexPath, const char* fragmentPath);
@@ -27,7 +35,8 @@ public:
     void setVector2(const std::string &name, float x, float y) const;
 
     int bitWidth();
-    int bitSize(const size_t index);
+    size_t bitSize(const size_t index);
+    ShaderType getShaderType(size_t index) const;
 };
   
 #endif

@@ -30,8 +30,25 @@ void Renderer::BindBufferData(std::vector<float> vertices, std::vector<unsigned 
     int index = 0;
     while(width < bitwidth) {
         int segmentwidth = RSO.bitSize(index);
+        GLenum type;
+        size_t size_mult = 0;
+        switch (RSO.getShaderType(index)) {
+            case ShaderType::Float:case ShaderType::Vec2:case ShaderType::Vec3:case ShaderType::Vec4:
+                type = GL_FLOAT;
+                size_mult = sizeof(float);
+                break;
+            case ShaderType::Int:
+                type = GL_INT;
+                size_mult = sizeof(int);
+                break;
+            default:
+                std::cout << "ERROR::RENDERER::VERTEX::INTERPRETATION_FAILED" << std::endl;
+                std::cout << "ERROR: unknown ShaderType cannot load" << std::endl;
+                exit(1);
+                break;
+        }
         glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, segmentwidth, GL_FLOAT, GL_FALSE, bitwidth * sizeof(float), (void*)(width * sizeof(float)));
+        glVertexAttribPointer(index, segmentwidth, type, GL_FALSE, bitwidth * size_mult, (void*)(width * size_mult));
         width += segmentwidth;
         ++index;
     }
