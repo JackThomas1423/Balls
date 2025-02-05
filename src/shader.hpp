@@ -10,9 +10,10 @@
 #include <sstream>
 #include <iostream>
 
+static const char* vertex_regex = "^layout ?\\( ?location ?= ?([0-9]) ?\\) in (vec[0-9]|float) [a-zA-Z0-9]+(?:\\[([0-9]+)\\])?;";
+
 enum class ShaderType {
-    Int,
-    Float,
+    Float = 1,
     Vec2,
     Vec3,
     Vec4,
@@ -36,7 +37,6 @@ public:
 
     int bitWidth();
     size_t bitSize(const size_t index);
-    ShaderType getShaderType(size_t index) const;
 };
   
 #endif

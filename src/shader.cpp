@@ -67,18 +67,19 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 
     std::stringstream vc(vertexCode);
     std::string buffer;
-    std::regex pattern("layout ?[(] ?location ?= ?([0-9]) ?[)] in (vec[0-9]|float|int) [a-zA-Z0-9]+;");
+    std::regex pattern(vertex_regex);
     std::smatch m;
 
     int line_index = 0;
     while (std::getline(vc, buffer, '\n')) {
         if(std::regex_search(buffer, m, pattern)) {
-            std::string tokens[3];
+            std::string tokens[4];
             int slot = 0;
             for (auto x : m) {
                 tokens[slot] = x;
                 ++slot;
             }
+            std::cout << tokens[3] << std::endl;
             if (tokens[2] == "vec2") {
                 bit_width.push_back(ShaderType::Vec2);
             } else if (tokens[2] == "vec3") {
@@ -87,8 +88,6 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
                 bit_width.push_back(ShaderType::Vec4);
             } else if (tokens[2] == "float") {
                 bit_width.push_back(ShaderType::Float);
-            } else if (tokens[2] == "int") {
-                bit_width.push_back(ShaderType::Int);
             } else {
                 std::cout << "ERROR::SHADER::VERTEX::INTERPRETATION_FAILED" << std::endl;
                 std::cout << "ERROR: " << line_index << ": type " << tokens[2] << " not yet supported" << std::endl;
@@ -134,22 +133,5 @@ int Shader::bitWidth()
 
 size_t Shader::bitSize(const size_t index)
 {
-    ShaderType segment = static_cast<ShaderType>(bit_width[index]);
-    switch (segment)
-    {
-    case ShaderType::Int: return 1;
-    case ShaderType::Float: return 1;
-    case ShaderType::Vec2: return 2;
-    case ShaderType::Vec3: return 3;
-    case ShaderType::Vec4: return 4;
-    default:
-        std::cout << "ERROR::SHADER::VERTEX::INTERPRETATION_FAILED" << std::endl;
-        std::cout << "ERROR: unknown ShaderType size found" << std::endl;
-        exit(1);
-        break;
-    }
-}
-
-ShaderType Shader::getShaderType(size_t index) const {
-    return bit_width[index];
+    return static_cast<size_t>(bit_width[index]);
 }
