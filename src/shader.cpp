@@ -71,6 +71,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     std::smatch m;
 
     int line_index = 0;
+    int previous_location = 0;
     while (std::getline(vc, buffer, '\n')) {
         if(std::regex_search(buffer, m, pattern)) {
             std::string tokens[4];
@@ -79,7 +80,13 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
                 tokens[slot] = x;
                 ++slot;
             }
-            std::cout << tokens[3] << std::endl;
+            if (previous_location != std::stoi(tokens[1])) {
+                std::cout << "ERROR::SHADER::VERTEX::INTERPRETATION_FAILED" << std::endl;
+                std::cout << "ERROR: invalid location layout" << std::endl;
+                exit(1);
+            }
+            if (!tokens[3].empty()) {previous_location += std::stoi(tokens[3]);} else {++previous_location;}
+
             if (tokens[2] == "vec2") {
                 bit_width.push_back(ShaderType::Vec2);
             } else if (tokens[2] == "vec3") {
