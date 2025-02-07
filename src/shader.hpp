@@ -10,7 +10,8 @@
 #include <sstream>
 #include <iostream>
 
-static const char* vertex_regex = "^layout ?\\( ?location ?= ?([0-9]) ?\\) in (vec[0-9]|float) [a-zA-Z0-9]+(?:\\[([0-9]+)\\])?;";
+static const char* vertex_regex = "^in (vec[0-9]|float) [a-zA-Z0-9]+(?:\\[([0-9]+)\\])?;";
+static const char* struct_regex = "struct (\w+)\s*{\s*(?:(\w+)\s+(\w+)\s*;\s+)*}\s*(\w+)?;";
 
 enum class ShaderType {
     Float = 1,
