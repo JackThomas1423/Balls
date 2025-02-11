@@ -124,6 +124,38 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
+    std::stringstream vc(vertexCode);
+    std::string buffer;
+    std::regex pattern(vertex_regex);
+    std::smatch m;
+
+    int line_index = 0;
+    while (std::getline(vc, buffer, '\n')) {
+        if(std::regex_search(buffer, m, pattern)) {
+            std::string tokens[4];
+            int slot = 0;
+            for (auto x : m) {
+                tokens[slot] = x;
+                ++slot;
+            }
+            std::cout << tokens[3] << std::endl;
+            if (tokens[2] == "vec2") {
+                bit_width.push_back(ShaderType::Vec2);
+            } else if (tokens[2] == "vec3") {
+                bit_width.push_back(ShaderType::Vec3);
+            } else if (tokens[2] == "vec4") {
+                bit_width.push_back(ShaderType::Vec4);
+            } else if (tokens[2] == "float") {
+                bit_width.push_back(ShaderType::Float);
+            } else {
+                std::cout << "ERROR::SHADER::VERTEX::INTERPRETATION_FAILED" << std::endl;
+                std::cout << "ERROR: " << line_index << ": type " << tokens[2] << " not yet supported" << std::endl;
+                exit(1);
+            }
+        }
+        ++line_index;
+    }
+
     // delete the shaders
     glDeleteShader(vertex);
     glDeleteShader(fragment);
