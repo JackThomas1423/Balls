@@ -1,12 +1,14 @@
 #include "glsl_handler.hpp"
+#include <iostream>
 
-template <typename T>
-std::vector<T> applyRexex(const std::string& code, const std::string& regex) {
+namespace glsl_handler {
+
+std::vector<std::smatch> applyRexex(const std::string& code, const std::string& regex) {
     std::regex pattern(regex);
     std::sregex_iterator chunk_start = std::sregex_iterator(code.begin(), code.end(), pattern);
     std::sregex_iterator chunk_end = std::sregex_iterator();
 
-    std::vector<T> chunks;
+    std::vector<std::smatch> chunks;
     for (std::sregex_iterator i = chunk_start; i != chunk_end; ++i) {
         std::smatch chunk = *i;
         chunks.push_back(chunk);
@@ -24,5 +26,7 @@ glsl_basics::ShaderType stringToShaderType(const std::string& type) {
     } else if (type == "vec4") {
         return glsl_basics::ShaderType::Vec4;
     }
-    return glsl_basics::ShaderType::Float;
+    return glsl_basics::ShaderType::Unknown;
+}
+
 }

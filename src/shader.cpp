@@ -32,7 +32,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     std::stringstream vc(vertexCode);
     std::vector<std::string> vertexCodeLines;
     std::string buffer;
-    std::regex vertex_pattern(vertex_regex);
+    std::regex vertex_pattern(glsl_basics::vertex_regex);
     std::smatch m;
 
     int line_index = 0;
@@ -53,14 +53,9 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
                 location_sizes.push_back(last + 1);
             }
 
-            if (tokens[1] == "vec2") {
-                bit_width.push_back(ShaderType::Vec2);
-            } else if (tokens[1] == "vec3") {
-                bit_width.push_back(ShaderType::Vec3);
-            } else if (tokens[1] == "vec4") {
-                bit_width.push_back(ShaderType::Vec4);
-            } else if (tokens[1] == "float") {
-                bit_width.push_back(ShaderType::Float);
+            glsl_basics::ShaderType type = glsl_handler::stringToShaderType(tokens[1]);
+            if (type != glsl_basics::ShaderType::Unknown) {
+                bit_width.push_back(type);
             } else {
                 std::cout << "ERROR::SHADER::VERTEX::INTERPRETATION_FAILED" << std::endl;
                 std::cout << "ERROR: " << line_index << ": type " << tokens[2] << " not yet supported" << std::endl;
@@ -72,27 +67,18 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     }
 
     //interpret structs for vertex shader
-    std::regex struct_pattern(struct_regex);
-    std::regex struct_part_pattern(struct_part_regex);
 
-    std::sregex_iterator struct_chunk_start = std::sregex_iterator(vertexCode.begin(), vertexCode.end(), struct_pattern);
-    std::sregex_iterator struct_chunk_end = std::sregex_iterator();
-
-    std::vector<std::string> struct_chunks;
-    for (std::sregex_iterator i = struct_chunk_start; i != struct_chunk_end; ++i) {
-        std::smatch chunk = *i;
-        //chunk[1] is name of struct here
-
+    for (std::smatch chunk : glsl_handler::applyRexex(vertexCode,glsl_basics::struct_regex)) {
+        std::string struct_name = chunk[1];
         std::string contents = chunk[2];
-        std::sregex_iterator struct_part_start = std::sregex_iterator(contents.begin(), contents.end(), struct_part_pattern);
-        std::sregex_iterator struct_part_end = std::sregex_iterator();
 
-        for (std::sregex_iterator j = struct_part_start; j != struct_part_end; ++j) {
-            std::smatch part = *j;
-            for (auto x : part) {
-                // chunk[1] struct components here
-                std::cout << x << std::endl;
-            }
+        glsl_basics::ShaderStruct shaderStruct;
+        shaderStruct.name = struct_name;
+        for (std::smatch part : glsl_handler::applyRexex(contents,glsl_basics::struct_part_regex)) {
+            std::string n = part[3].str();
+            std::optional<int> size = (!n.empty()) ? std::optional<int>{std::stoi(n)} : std::nullopt;
+            glsl_basics::ShaderStructType type = glsl_basics::ShaderStructType(glsl_handler::stringToShaderType(part[1].str()),part[2].str(),size);
+            shaderStruct.types.push_back(type);            
         }
     }
 
@@ -178,7 +164,7 @@ void Shader::setVector2(const std::string &name, float x, float y) const
 int Shader::bitWidth()
 {
     int vertex_width = 0;
-    for (const ShaderType& type : bit_width)
+    for (const glsl_basics::ShaderType& type : bit_width)
         vertex_width += static_cast<int>(type);
     return vertex_width;
 }
