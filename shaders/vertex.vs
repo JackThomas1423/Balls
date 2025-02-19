@@ -1,6 +1,7 @@
 #version 330 core
 in vec2 position;
 in vec3 color;
+in vec4 th;
 
 struct test {
     vec3 a[3];

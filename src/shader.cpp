@@ -29,42 +29,18 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     }
     
     //interpret vertex shader code
-    std::stringstream vc(vertexCode);
-    std::vector<std::string> vertexCodeLines;
-    std::string buffer;
-    std::regex vertex_pattern(glsl_basics::vertex_regex);
-    std::smatch m;
 
-    int line_index = 0;
+    ptrdiff_t offset = 0;
     std::vector<int> location_sizes = {0};
-    while (std::getline(vc, buffer, '\n')) {
-        if(std::regex_search(buffer, m, vertex_pattern)) {
-            std::string tokens[3];
-            int slot = 0;
-            for (auto x : m) {
-                tokens[slot] = x;
-                ++slot;
-            }
-            
-            int last = location_sizes[location_sizes.size() - 1];
-            if (!tokens[2].empty()) {
-                location_sizes.push_back(last + std::stoi(tokens[2]));
-            } else {
-                location_sizes.push_back(last + 1);
-            }
-
-            glsl_basics::ShaderType type = glsl_handler::stringToShaderType(tokens[1]);
-            if (type != glsl_basics::ShaderType::Unknown) {
-                bit_width.push_back(type);
-            } else {
-                std::cout << "ERROR::SHADER::VERTEX::INTERPRETATION_FAILED" << std::endl;
-                std::cout << "ERROR: " << line_index << ": type " << tokens[2] << " not yet supported" << std::endl;
-                exit(1);
-            }
-        }
-        vertexCodeLines.push_back(buffer);
-        ++line_index;
+    for (std::smatch match : glsl_handler::applyRexex(vertexCode,glsl_basics::vertex_regex)) {
+        std::string modified = "layout(location = " + std::to_string(location_sizes.back()) + ") ";
+        offset += match.position();
+        vertexCode.insert(offset,modified);
+        offset += 3;
+        //plus 3 is there becuase differense of line lenght causes over shooting, needs fixing
     }
+    std::cout << vertexCode << std::endl;
+    exit(-1);
 
     //interpret structs for vertex shader
 
@@ -82,20 +58,9 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
         }
     }
 
-    std::string newVertexCode = "";
-
-    int location_index = 0;
-    for (std::string line : vertexCodeLines) {
-        if (std::regex_match(line,m,vertex_pattern)) {
-            newVertexCode += "layout(location = " + std::to_string(location_sizes[location_index]) + ") ";
-            ++location_index;
-        }
-        newVertexCode += line + "\n";
-    }
-
     //compile shaders
     
-    const char* vShaderCode = newVertexCode.c_str();
+    const char* vShaderCode = vertexCode.c_str();
     const char* fShaderCode = fragmentCode.c_str();
 
     unsigned int vertex, fragment;
