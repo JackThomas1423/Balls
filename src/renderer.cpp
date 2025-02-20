@@ -17,7 +17,7 @@ Renderer::~Renderer() {
 }
 
 void Renderer::BindBufferData(std::vector<float> vertices, std::vector<unsigned int> indices) {
-    int bitwidth = RSO.bitWidth();
+    int bitwidth = RSO.getLocationOffset(RSO.getLocationLength() - 1);
     TAC = vertices.size() / bitwidth;
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -29,7 +29,7 @@ void Renderer::BindBufferData(std::vector<float> vertices, std::vector<unsigned 
     int width = 0;
     int index = 0;
     while(width < bitwidth) {
-        int segmentwidth = RSO.bitSize(index);
+        int segmentwidth = RSO.getLocationOffset(index) - RSO.getLocationOffset(index - 1);
         glEnableVertexAttribArray(index);
         glVertexAttribPointer(index, segmentwidth, GL_FLOAT, GL_FALSE, bitwidth * sizeof(float), (void*)(width * sizeof(float)));
         width += segmentwidth;

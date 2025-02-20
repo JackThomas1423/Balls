@@ -9,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <numeric>
 
 #include "glsl_basics.hpp"
 #include "glsl_handler.hpp"
@@ -17,7 +18,7 @@ class Shader
 {
 private:
     unsigned int ID;
-    std::vector<glsl_basics::ShaderType> bit_width;
+    std::vector<int> location_sizes;
 public:
 
     Shader(const char* vertexPath, const char* fragmentPath);
@@ -29,8 +30,8 @@ public:
     void setFloat(const std::string &name, float value) const;
     void setVector2(const std::string &name, float x, float y) const;
 
-    int bitWidth();
-    size_t bitSize(const size_t index);
+    inline int getLocationOffset(int index) const;
+    inline int getLocationLength() const;
 };
   
 #endif

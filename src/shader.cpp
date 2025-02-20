@@ -30,17 +30,14 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     
     //interpret vertex shader code
 
-    ptrdiff_t offset = 0;
-    std::vector<int> location_sizes = {0};
+    location_sizes.push_back(0);
+    std::ptrdiff_t offset = 0;
     for (std::smatch match : glsl_handler::applyRexex(vertexCode,glsl_basics::vertex_regex)) {
         std::string modified = "layout(location = " + std::to_string(location_sizes.back()) + ") ";
-        offset += match.position();
-        vertexCode.insert(offset,modified);
-        offset += 3;
-        //plus 3 is there becuase differense of line lenght causes over shooting, needs fixing
+        vertexCode.insert(match.position() + offset,modified);
+        location_sizes.push_back((match[3].str().empty()) ? location_sizes.back() + 1 : location_sizes.back() + std::stoi(match[3].str()));
+        offset += modified.length();
     }
-    std::cout << vertexCode << std::endl;
-    exit(-1);
 
     //interpret structs for vertex shader
 
@@ -126,15 +123,10 @@ void Shader::setVector2(const std::string &name, float x, float y) const
     glUniform2f(glGetUniformLocation(ID,name.c_str()),x,y);
 }
 
-int Shader::bitWidth()
-{
-    int vertex_width = 0;
-    for (const glsl_basics::ShaderType& type : bit_width)
-        vertex_width += static_cast<int>(type);
-    return vertex_width;
+inline int Shader::getLocationOffset(int index) const {
+    return location_sizes.at(index);
 }
 
-size_t Shader::bitSize(const size_t index)
-{
-    return static_cast<size_t>(bit_width[index]);
+inline int Shader::getLocationLength() const {
+    return location_sizes.size();
 }
