@@ -2,6 +2,8 @@
 #include <numeric>
 #include "shader.hpp"
 #include "renderer.hpp"
+#include "glsl_basics.hpp"
+#include "glsl_handler.hpp"
 
 Renderer::Renderer() : RSO("shaders/vertex.vs","shaders/fragment.fs") {
     glGenVertexArrays(1, &VAO);
@@ -17,7 +19,8 @@ Renderer::~Renderer() {
 }
 
 void Renderer::BindBufferData(std::vector<float> vertices, std::vector<unsigned int> indices) {
-    int bitwidth = RSO.getLocationOffset(RSO.getLocationLength() - 1);
+    //total width of one row of inputs
+    int bitwidth = RSO.getShaderInputWidth();
     TAC = vertices.size() / bitwidth;
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -29,7 +32,8 @@ void Renderer::BindBufferData(std::vector<float> vertices, std::vector<unsigned 
     int width = 0;
     int index = 0;
     while(width < bitwidth) {
-        int segmentwidth = RSO.getLocationOffset(index) - RSO.getLocationOffset(index - 1);
+        //each segments width
+        int segmentwidth = 1;
         glEnableVertexAttribArray(index);
         glVertexAttribPointer(index, segmentwidth, GL_FLOAT, GL_FALSE, bitwidth * sizeof(float), (void*)(width * sizeof(float)));
         width += segmentwidth;

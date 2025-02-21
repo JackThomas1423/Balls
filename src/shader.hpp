@@ -18,7 +18,8 @@ class Shader
 {
 private:
     unsigned int ID;
-    std::vector<int> location_sizes;
+    std::vector<glsl_basics::ShaderStruct> structs;
+    std::vector<glsl_basics::ShaderType> types;
 public:
 
     Shader(const char* vertexPath, const char* fragmentPath);
@@ -30,8 +31,11 @@ public:
     void setFloat(const std::string &name, float value) const;
     void setVector2(const std::string &name, float x, float y) const;
 
-    inline int getLocationOffset(int index) const;
-    inline int getLocationLength() const;
+    int getShaderInputWidth() {
+        return std::accumulate(types.begin(),types.end(),0,[](int acc, glsl_basics::ShaderType type) {
+            return acc + type.size;
+        });
+    }
 };
   
 #endif
