@@ -33,7 +33,7 @@ void Renderer::BindBufferData(std::vector<float> vertices, std::vector<unsigned 
     int index = 0;
     while(width < bitwidth) {
         //each segments width
-        int segmentwidth = 1;
+        int segmentwidth = RSO.getShaderSegmentWidth(index);
         glEnableVertexAttribArray(index);
         glVertexAttribPointer(index, segmentwidth, GL_FLOAT, GL_FALSE, bitwidth * sizeof(float), (void*)(width * sizeof(float)));
         width += segmentwidth;

@@ -3,7 +3,7 @@ in vec2 position;
 in vec3 color;
 
 struct test {
-    vec3 a;
+    vec3 a[3];
     vec2 b;
 };
 

@@ -29,32 +29,40 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     }
 
     //interpret vertex shader structs
-    for (std::smatch chunk : glsl_handler::applyRexex(vertexCode,glsl_basics::struct_regex)) {
+    for (std::smatch chunk : glsl_handler::applyRegex(vertexCode,glsl_basics::struct_regex)) {
         std::string struct_name = chunk[1];
         std::string contents = chunk[2];
 
         glsl_basics::ShaderStruct shaderStruct;
         shaderStruct.name = struct_name;
-        for (std::smatch part : glsl_handler::applyRexex(contents,glsl_basics::struct_part_regex)) {
+        for (std::smatch part : glsl_handler::applyRegex(contents,glsl_basics::struct_part_regex)) {
             std::string n = part[3].str();
             std::optional<int> size = (!n.empty()) ? std::optional<int>{std::stoi(n)} : std::nullopt;
-            glsl_basics::ShaderStructType type = glsl_basics::ShaderStructType(glsl_handler::stringToShaderType(part[1].str(),structs),part[2].str(),size);
-            shaderStruct.types.push_back(type);            
+            glsl_basics::ShaderStructType type = glsl_basics::ShaderStructType(glsl_handler::stringToShaderType(part[1].str()),part[2].str(),size);
+            shaderStruct.types.push_back(type);
         }
         structs.push_back(shaderStruct);
     }
     
     //interpret vertex shader code
-    int location = 0;
+    std::regex lrp(glsl_basics::layout_regex);
+    std::sregex_iterator chunk_start = std::sregex_iterator(vertexCode.begin(), vertexCode.end(), lrp);
+    std::sregex_iterator chunk_end = std::sregex_iterator();
+
+    std::string modifiedCode = vertexCode;
     std::ptrdiff_t offset = 0;
-    for (std::smatch match : glsl_handler::applyRexex(vertexCode,glsl_basics::vertex_regex)) {
-        auto type = glsl_handler::stringToShaderType(match[1].str(),structs);
-        std::string modified = "layout(location = " + std::to_string(location) + ") ";
-        vertexCode.insert(match.position() + offset,modified);
+
+    int location = 0;
+    for (std::sregex_iterator i = chunk_start; i != chunk_end; ++i) {
+        std::smatch match = *i;
+        glsl_basics::ShaderType type = glsl_handler::stringToShaderType(match[1].str());
+        std::string modified = "layout (location = " + std::to_string(location) + ") " ;
+        modifiedCode.insert(match.position() + offset, modified);
         types.push_back(type);
         location += type.offset;
         offset += modified.length();
     }
+    vertexCode = modifiedCode;
 
     //compile shaders
     

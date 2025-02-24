@@ -36,6 +36,10 @@ public:
             return acc + type.size;
         });
     }
+
+    int getShaderSegmentWidth(int index) {
+        return types[index].size;
+    }
 };
   
 #endif

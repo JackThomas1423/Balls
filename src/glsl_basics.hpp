@@ -7,13 +7,13 @@
 
 namespace glsl_basics {
 
-static const char* vertex_regex = "in\\s+(\\w+)\\s+(\\w+)\\s*(?:\\[(\\d+)\\])?\\s*;";
+static const char* layout_regex = "in\\s+(\\w+)\\s+(\\w+)\\s*(?:\\[(\\d+)\\])?\\s*;";
 static const char* struct_regex = "struct\\s+(\\w+)\\s*\\{(\\s*(?:\\w+\\s+\\w+\\s*(?:\\[\\d+\\])?;\\s+)*)\\}\\s*(\\w+)?\\s*;";
 static const char* struct_part_regex = "(\\w+)\\s+(\\w+)\\s*(?:\\[(\\d+)\\])?;";
 
 struct ShaderType {
     enum Type {
-        Unknown,
+        Unknown = 0,
         Struct,
         Float,
         Vec2,
@@ -23,7 +23,7 @@ struct ShaderType {
     int size;
     Type type;
     int offset;
-    ShaderType(int _size_, Type _type_, int _offset_) : size(_size_), type(_type_), offset(_offset_) {}
+    ShaderType(int _size_, Type _type_, int _offset_, int array_size = 1) : size(_size_), type(_type_), offset(_offset_ * array_size) {}
 };
 
 struct ShaderStructType {
@@ -39,7 +39,7 @@ struct ShaderStruct {
     int offset() {
         return std::accumulate(types.begin(),types.end(),0,[](int acc, ShaderStructType type) {
             if (type.arraySize.has_value()) {
-                return acc + type.type.offset * type.arraySize.value();
+                return acc + type.type.offset * ( type.arraySize.value() + 1 );
             }
             return acc + type.type.offset;
         });
