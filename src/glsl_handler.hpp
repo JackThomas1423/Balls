@@ -7,6 +7,7 @@ namespace glsl_handler {
 
 std::vector<std::smatch> applyRegex(const std::string& code, const std::string& regex);
 
-glsl_basics::ShaderType::Type stringToShaderType(const std::string& type);
+glsl_basics::ShaderType stringToShaderType(const std::string& str);
+int shaderTypeToSize(glsl_basics::ShaderType type);
 
 }

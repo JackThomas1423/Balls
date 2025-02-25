@@ -11,44 +11,27 @@ static const char* layout_regex = "in\\s+(\\w+)\\s+(\\w+)\\s*(?:\\[(\\d+)\\])?\\
 static const char* struct_regex = "struct\\s+(\\w+)\\s*\\{(\\s*(?:\\w+\\s+\\w+\\s*(?:\\[\\d+\\])?;\\s+)*)\\}\\s*(\\w+)?\\s*;";
 static const char* struct_part_regex = "(\\w+)\\s+(\\w+)\\s*(?:\\[(\\d+)\\])?;";
 
-struct ShaderType {
-    enum Type {
-        Unknown = 0,
-        Struct,
-        Float,
-        Vec2,
-        Vec3,
-        Vec4
-    };
-    int size;
-    Type type;
-    int offset;
-    ShaderType(int _size_, Type _type_, int _offset_, int array_size = 1) : size(_size_), type(_type_), offset(_offset_ * array_size) {}
+enum class ShaderType {
+    Unknown = 0,
+    Struct,
+    Float,
+    Vec2,
+    Vec3,
+    Vec4,
 };
 
-struct ShaderStructType {
+struct ShaderInput {
+    int size;
     ShaderType type;
     std::string name;
     std::optional<int> arraySize;
-    ShaderStructType(ShaderType _type_, std::string _name_, std::optional<int> _arraySize_) : type(_type_), name(_name_), arraySize(_arraySize_) {}
+    ShaderInput(ShaderType _type_, std::string _name_, std::optional<int> _arraySize_, int _size_) : size(_size_), type(_type_), name(_name_), arraySize(_arraySize_) {}
 };
 
 struct ShaderStruct {
     std::string name;
-    std::vector<ShaderStructType> types;
-    int offset() {
-        return std::accumulate(types.begin(),types.end(),0,[](int acc, ShaderStructType type) {
-            if (type.arraySize.has_value()) {
-                return acc + type.type.offset * ( type.arraySize.value() + 1 );
-            }
-            return acc + type.type.offset;
-        });
-    }
-    int size() {
-        return std::accumulate(types.begin(),types.end(),0,[](int acc, ShaderStructType type) {
-            return acc + type.type.size;
-        });
-    }
+    std::vector<ShaderInput> inputs;
+    ShaderStruct(std::string _name_, std::vector<ShaderInput> _inputs_) : name(_name_), inputs(_inputs_) {}
 };
 
 }

@@ -16,20 +16,20 @@ std::vector<std::smatch> applyRegex(const std::string& code, const std::string& 
     return chunks;
 }
 
-glsl_basics::ShaderType::Type stringToShaderType(const std::string& type) {
-    if (type == "float") {
+glsl_basics::ShaderType stringToShaderType(const std::string& str) {
+    if (str == "float") {
         return glsl_basics::ShaderType::Float;
-    } else if (type == "vec2") {
+    } else if (str == "vec2") {
         return glsl_basics::ShaderType::Vec2;
-    } else if (type == "vec3") {
-        return glsl_basics::ShaderType::Vec3;
-    } else if (type == "vec4") {
-        return glsl_basics::ShaderType::Vec4;
-    } else {
-        //check for structs
     }
-    std::cout << "Unknown type: '" << type << "'" << std::endl;
     return glsl_basics::ShaderType::Unknown;
+}
+
+int shaderTypeToSize(glsl_basics::ShaderType type) {
+    switch(type) {
+        case glsl_basics::ShaderType::Float: return 1;
+        default: return -1;
+    }
 }
 
 }

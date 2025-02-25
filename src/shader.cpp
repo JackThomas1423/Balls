@@ -33,18 +33,25 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
         std::string struct_name = chunk[1];
         std::string contents = chunk[2];
 
-        glsl_basics::ShaderStruct shaderStruct;
-        shaderStruct.name = struct_name;
+        std::vector<glsl_basics::ShaderInput> inputs;
         for (std::smatch part : glsl_handler::applyRegex(contents,glsl_basics::struct_part_regex)) {
-            std::string n = part[3].str();
-            std::optional<int> size = (!n.empty()) ? std::optional<int>{std::stoi(n)} : std::nullopt;
-            glsl_basics::ShaderStructType type = glsl_basics::ShaderStructType(glsl_handler::stringToShaderType(part[1].str()),part[2].str(),size);
-            shaderStruct.types.push_back(type);
+            glsl_basics::ShaderType type = glsl_handler::stringToShaderType(part[1].str());
+            std::optional<int> size = (!part[3].str().empty()) ? std::optional<int>{std::stoi(part[3].str())} : std::nullopt;
+            inputs.push_back(glsl_basics::ShaderInput(type,part[2].str(),size,1));
         }
-        structs.push_back(shaderStruct);
+        structs.push_back(glsl_basics::ShaderStruct(struct_name,inputs));
     }
+    for (auto x : structs) {
+        std::cout << x.name << std::endl;
+        for (auto y : x.inputs) {
+            std::cout << y.name << std::endl;
+            std::cout << (int)y.type << std::endl;
+        }
+    }
+    exit(-1);
     
     //interpret vertex shader code
+    /*
     std::regex lrp(glsl_basics::layout_regex);
     std::sregex_iterator chunk_start = std::sregex_iterator(vertexCode.begin(), vertexCode.end(), lrp);
     std::sregex_iterator chunk_end = std::sregex_iterator();
@@ -63,6 +70,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
         offset += modified.length();
     }
     vertexCode = modifiedCode;
+    */
 
     //compile shaders
     
