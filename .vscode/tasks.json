@@ -14,8 +14,6 @@
 				"-L${workspaceFolder}/dependencies/library",
 				"${workspaceFolder}/src/main.cpp",
 				"${workspaceFolder}/src/shader.cpp",
-				"${workspaceFolder}/src/renderer.cpp",
-				"${workspaceFolder}/src/glsl_handler.cpp",
 				"${workspaceFolder}/src/glad.c",
 				"${workspaceFolder}/dependencies/library/libglfw.3.4.dylib",
 				"-o",
