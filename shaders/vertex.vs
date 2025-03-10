@@ -1,6 +1,6 @@
 #version 330 core
-in vec2 position;
-in vec3 color;
+layout (location = 0) in vec2 position;
+layout (location = 1) in vec3 color;
 
 struct test {
     vec3 a[3];
