@@ -85,6 +85,15 @@ int main()
         "}\n\0";
     unsigned int shaderProgram = shader::createShaderProgram(vertexShaderSource, fragmentShaderSource);
 
+    auto layout = shader::parseVertexShaderCode(vertexShaderSource);
+
+    for (int i = 0; i < layout.types.size(); i++) {
+        unsigned int loc = layout.location(i);
+        unsigned int size = layout.size(i);
+        shader::GLSL_TYPE type = layout.type(i);
+        std::cout << "Location: " << loc << " Size: " << size << " Type: " << (int)type << std::endl;
+    }
+
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(window))
     {
