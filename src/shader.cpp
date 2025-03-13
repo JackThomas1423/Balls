@@ -1,7 +1,7 @@
 #include "shader.hpp"
 
 shader::VertexLayout shader::parseVertexShaderCode(const char* code) {
-    std::vector<GLSL_TYPE> types;
+    std::vector<std::string> types;
     std::vector<unsigned int> sizes;
     std::string str(code);
     std::regex layoutRegex(LayoutRegexPattern);
@@ -10,24 +10,11 @@ shader::VertexLayout shader::parseVertexShaderCode(const char* code) {
 
     for (std::sregex_iterator i = chunk_start; i != chunk_end; ++i) {
         std::smatch chunk = *i;
-        std::string type = chunk[1];
-        std::string size = chunk[3];
-        types.push_back(glsl_type(type));
+        std::string size = chunk[3].str();
+        types.push_back(chunk[1].str());
         sizes.push_back(size.empty() ? 1 : std::stoi(size));
     }
     return VertexLayout(types, sizes);
-}
-
-shader::GLSL_TYPE shader::glsl_type(std::string s) {
-    if (s == "float") return GLSL_TYPE::FLOAT;
-    if (s == "int") return GLSL_TYPE::INT;
-    if (s == "vec2") return GLSL_TYPE::VEC2;
-    if (s == "vec3") return GLSL_TYPE::VEC3;
-    if (s == "vec4") return GLSL_TYPE::VEC4;
-    if (s == "mat2") return GLSL_TYPE::MAT2;
-    if (s == "mat3") return GLSL_TYPE::MAT3;
-    if (s == "mat4") return GLSL_TYPE::MAT4;
-    return GLSL_TYPE::FLOAT;
 }
 
 unsigned int shader::compileShaderCode(const char* code, GLenum type)

@@ -8,38 +8,30 @@ namespace shader {
 
     static const char* LayoutRegexPattern = "layout\\s*\\(\\s*location\\s*\\=\\s*\\d+\\s*\\)\\s*in\\s+(\\w+)\\s+(\\w+)\\s*(?:\\[(\\d+)\\])?\\s*;";
 
-    enum class GLSL_TYPE {
-        FLOAT = 0,
-        INT = 1,
-        VEC2 = 2,
-        VEC3 = 3,
-        VEC4 = 4,
-        MAT2 = 5,
-        MAT3 = 6,
-        MAT4 = 7,
-    };
-
-    GLSL_TYPE glsl_type(std::string s);
-
     struct VertexLayout {
-        std::vector<GLSL_TYPE> types;
+        std::vector<std::string> types;
         std::vector<unsigned int> sizes;
-        VertexLayout(std::vector<GLSL_TYPE> types, std::vector<unsigned int> sizes) : types(types), sizes(sizes) {}
+        VertexLayout(std::vector<std::string> types, std::vector<unsigned int> sizes) : types(types), sizes(sizes) {}
 
-        inline GLSL_TYPE type(int index) { return types[index]; }
-        unsigned int size(int index) {
-            switch (types[index]) {
-                case GLSL_TYPE::FLOAT:return 1;
-                case GLSL_TYPE::INT:return 1;
-                case GLSL_TYPE::VEC2:return 2;
-                case GLSL_TYPE::VEC3:return 3;
-                case GLSL_TYPE::VEC4:return 4;
-                case GLSL_TYPE::MAT2:return 4;
-                case GLSL_TYPE::MAT3:return 9;
-                case GLSL_TYPE::MAT4:return 16;
-                default:
-                    return 0;
+        unsigned int vertex(int index) {
+            std::string s = types[index];
+            if (s == "int") return 1;
+            if (s == "float") return 1;
+            if (s == "vec2") return 2;
+            if (s == "vec3") return 3;
+            if (s == "vec4") return 4;
+            if (s == "mat2") return 4;
+            if (s == "mat3") return 9;
+            if (s == "mat4") return 16;
+            return -1;
+        }
+
+        unsigned int stride() {
+            unsigned int stride = 0;
+            for (int i = 0; i < sizes.size(); i++) {
+                stride += sizes[i] * vertex(i);
             }
+            return stride;
         }
 
         unsigned int location(int index) {
@@ -50,8 +42,6 @@ namespace shader {
             return loc;
         }
     };
-
- 
 
     VertexLayout parseVertexShaderCode(const char* code);
 
