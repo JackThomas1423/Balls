@@ -17,6 +17,26 @@ shader::VertexLayout shader::parseVertexShaderCode(const char* code) {
     return VertexLayout(types, sizes);
 }
 
+void shader::SetUniform(unsigned int shaderProgram, const std::string& name, float value)
+{
+    glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), value);
+}
+
+void shader::SetUniform(unsigned int shaderProgram, const std::string& name, float x, float y)
+{
+    glUniform2f(glGetUniformLocation(shaderProgram, name.c_str()), x, y);
+}
+
+void shader::SetUniform(unsigned int shaderProgram, const std::string& name, float x, float y, float z)
+{
+    glUniform3f(glGetUniformLocation(shaderProgram, name.c_str()), x, y, z);
+}
+
+void shader::SetUniform(unsigned int shaderProgram, const std::string& name, float x, float y, float z, float w)
+{
+    glUniform4f(glGetUniformLocation(shaderProgram, name.c_str()), x, y, z, w);
+}
+
 unsigned int shader::compileShaderCode(const char* code, GLenum type)
 {
     unsigned int shader = glCreateShader(type);

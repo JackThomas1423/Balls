@@ -46,6 +46,11 @@ namespace shader {
 
     VertexLayout parseVertexShaderCode(const char* code);
 
+    void SetUniform(unsigned int shaderProgram, const std::string& name, float value);
+    void SetUniform(unsigned int shaderProgram, const std::string& name, float x, float y);
+    void SetUniform(unsigned int shaderProgram, const std::string& name, float x, float y, float z);
+    void SetUniform(unsigned int shaderProgram, const std::string& name, float x, float y, float z, float w);
+
     unsigned int compileShaderCode(const char* code, GLenum type);
     unsigned int createShaderProgram(const char* vertexCode, const char* fragmentCode);
 

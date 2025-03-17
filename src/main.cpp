@@ -43,9 +43,9 @@ int main()
     std::string fragmentCode = shader::getShaderCode("shaders/fragment.fs");
 
     unsigned int shaderProgram = shader::createShaderProgram(vertexCode.c_str(), fragmentCode.c_str());
-    auto shaderLayout = shader::parseVertexShaderCode(vertexCode.c_str());
+    auto vertexLayout = shader::parseVertexShaderCode(vertexCode.c_str());
 
-    int stride = shaderLayout.stride() * sizeof(float);
+    int stride = vertexLayout.stride() * sizeof(float);
 
     std::vector<float> vertices = {
         -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  
@@ -70,11 +70,12 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)(shaderLayout.stride(0) * sizeof(float)));
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(shaderLayout.stride(1) * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    int index = 0;
+    while (vertexLayout.types.size() > index) {
+        glVertexAttribPointer(vertexLayout.location(index), vertexLayout.vertex(index), GL_FLOAT, GL_FALSE, stride, (void*)(vertexLayout.stride(index) * sizeof(float)));
+        glEnableVertexAttribArray(index);
+        index++;
+    }
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
