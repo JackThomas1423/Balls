@@ -26,9 +26,10 @@ namespace shader {
             return -1;
         }
 
-        unsigned int stride() {
+        unsigned int stride(int index = -1) {
+            int limit = (index == -1) ? types.size() : index;
             unsigned int stride = 0;
-            for (int i = 0; i < sizes.size(); i++) {
+            for (int i = 0; i < limit; i++) {
                 stride += sizes[i] * vertex(i);
             }
             return stride;
