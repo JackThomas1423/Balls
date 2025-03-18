@@ -1,3 +1,5 @@
+#pragma once
+
 #include <glad/glad.h>
 #include <iostream>
 #include <fstream>
@@ -15,7 +17,6 @@ namespace shader {
 
         unsigned int vertex(int index) {
             std::string s = types[index];
-            if (s == "int") return 1;
             if (s == "float") return 1;
             if (s == "vec2") return 2;
             if (s == "vec3") return 3;

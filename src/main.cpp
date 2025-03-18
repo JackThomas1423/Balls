@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "shader.hpp"
+#include "object.hpp"
 
 #include <iostream>
 #include <vector>
@@ -43,9 +44,7 @@ int main()
     std::string fragmentCode = shader::getShaderCode("shaders/fragment.fs");
 
     unsigned int shaderProgram = shader::createShaderProgram(vertexCode.c_str(), fragmentCode.c_str());
-    auto vertexLayout = shader::parseVertexShaderCode(vertexCode.c_str());
-
-    int stride = vertexLayout.stride() * sizeof(float);
+    shader::VertexLayout vertexLayout = shader::parseVertexShaderCode(vertexCode.c_str());
 
     std::vector<float> vertices = {
         -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  
@@ -57,28 +56,8 @@ int main()
         0, 1, 2
     };
 
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
-
-    int index = 0;
-    while (vertexLayout.types.size() > index) {
-        glVertexAttribPointer(vertexLayout.location(index), vertexLayout.vertex(index), GL_FLOAT, GL_FALSE, stride, (void*)(vertexLayout.stride(index) * sizeof(float)));
-        glEnableVertexAttribArray(index);
-        index++;
-    }
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    Object::Object triangle(vertexLayout, vertices, indices);
+    triangle.setShaderProgram(shaderProgram);
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(window))
@@ -87,10 +66,8 @@ int main()
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+        
+        triangle.draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
