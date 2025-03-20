@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "shader.hpp"
+#include "texture.hpp"
 #include "object.hpp"
 
 #include <iostream>
