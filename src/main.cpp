@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "shader.hpp"
+#include "object.hpp"
 
 #include <iostream>
 #include <vector>
@@ -45,40 +46,27 @@ int main()
     unsigned int shaderProgram = shader::createShaderProgram(vertexCode.c_str(), fragmentCode.c_str());
     auto vertexLayout = shader::parseVertexShaderCode(vertexCode.c_str());
 
-    int stride = vertexLayout.stride() * sizeof(float);
-
     std::vector<float> vertices = {
         -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  
          0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
          0.0f,  0.5f, 0.0f, 0.0f, 1.0f,
+        -1.0f, -1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, 1.0f, 1.0f, 1.0f,
     };
 
     std::vector<unsigned int> indices = {
         0, 1, 2
     };
 
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    std::vector<unsigned int> indices2 = {
+        0, 3, 4
+    };
 
-    glBindVertexArray(VAO);
+    object::DisplayObject object;
+    object.bind(vertexLayout, vertices, indices);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
-
-    int index = 0;
-    while (vertexLayout.types.size() > index) {
-        glVertexAttribPointer(vertexLayout.location(index), vertexLayout.vertex(index), GL_FLOAT, GL_FALSE, stride, (void*)(vertexLayout.stride(index) * sizeof(float)));
-        glEnableVertexAttribArray(index);
-        index++;
-    }
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    object::DisplayObject object2;
+    object2.bind(vertexLayout, vertices, indices2);
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(window))
@@ -89,8 +77,8 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+        object.draw();
+        object2.draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
