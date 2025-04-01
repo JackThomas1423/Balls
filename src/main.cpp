@@ -13,7 +13,6 @@ void processInput(GLFWwindow *window);
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-//test
 
 int main()
 {
@@ -54,8 +53,21 @@ int main()
          0.0f,  0.5f, 0.0f, 0.0f, 1.0f,
     };
 
+    std::vector<float> vertices2 = {
+        -1.0f, -1.0f, 1.0f, 0.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+        1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+    };
+
     std::vector<unsigned int> indices = {
         0, 1, 2
+    };
+
+    std::vector<unsigned int> indices2 = {
+        0, 4, 1,
+        1, 4, 2
     };
 
     Object::Object triangle(vertexLayout, vertices, indices);
@@ -70,6 +82,10 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
         
         triangle.draw();
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+            triangle.bind(vertices2);
+            triangle.bind(indices2);
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -83,6 +99,10 @@ void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
