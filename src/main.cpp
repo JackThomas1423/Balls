@@ -48,18 +48,11 @@ int main()
     shader::VertexLayout vertexLayout = shader::parseVertexShaderCode(vertexCode.c_str());
 
     std::vector<float> vertices = {
-        -1.0f, -1.0f, 1.0f, 0.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-        1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-        0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-    };
-
-    std::vector<float> vertices2 = {
-        -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  
-        0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-        0.0f,  0.5f, 0.0f, 0.0f, 1.0f,
-        -1.0f,  1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+        1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f
     };
 
     std::vector<unsigned int> indices = {
@@ -69,16 +62,9 @@ int main()
         3, 4, 0
     };
 
-    std::vector<unsigned int> indices2 = {
-        0, 1, 2,
-        1, 2, 3
-    };
-
-    Object::Object triangle(vertexLayout, vertices, indices);
-    triangle.setShaderProgram(shaderProgram);
+    Object::Texture texture(vertexLayout, shaderProgram, vertices, indices, "src/tomato.png");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    bool set = false;
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
@@ -86,11 +72,10 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
-        triangle.draw();
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !set) {
-            triangle.bind(vertices2);
-            triangle.bind(indices2);
-            set = true;
+        texture.draw();
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+            texture.bind(vertices);
+            vertices[0] += 0.001f;
         }
 
         glfwSwapBuffers(window);
