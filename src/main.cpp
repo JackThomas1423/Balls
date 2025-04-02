@@ -48,12 +48,6 @@ int main()
     shader::VertexLayout vertexLayout = shader::parseVertexShaderCode(vertexCode.c_str());
 
     std::vector<float> vertices = {
-        -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-         0.0f,  0.5f, 0.0f, 0.0f, 1.0f,
-    };
-
-    std::vector<float> vertices2 = {
         -1.0f, -1.0f, 1.0f, 0.0f, 0.0f,
         -1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
         1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
@@ -61,19 +55,30 @@ int main()
         0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
     };
 
+    std::vector<float> vertices2 = {
+        -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+        0.0f,  0.5f, 0.0f, 0.0f, 1.0f,
+        -1.0f,  1.0f, 1.0f, 1.0f, 1.0f,
+    };
+
     std::vector<unsigned int> indices = {
-        0, 1, 2
+        0, 4, 1,
+        1, 4, 2,
+        2, 4, 3,
+        3, 4, 0
     };
 
     std::vector<unsigned int> indices2 = {
-        0, 4, 1,
-        1, 4, 2
+        0, 1, 2,
+        1, 2, 3
     };
 
     Object::Object triangle(vertexLayout, vertices, indices);
     triangle.setShaderProgram(shaderProgram);
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    bool set = false;
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
@@ -82,9 +87,10 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
         
         triangle.draw();
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !set) {
             triangle.bind(vertices2);
             triangle.bind(indices2);
+            set = true;
         }
 
         glfwSwapBuffers(window);
@@ -97,12 +103,22 @@ int main()
 
 void processInput(GLFWwindow *window)
 {
+    static bool wasWDown = false;
+    static bool isWireframe = false;
+
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    
+    bool isWDown = glfwGetKey(window, GLFW_KEY_W);
+    if (isWDown && !wasWDown) {
+        isWireframe = !isWireframe;
+        if (isWireframe) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        } else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }
+    }
+    wasWDown = isWDown;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)

@@ -10,8 +10,6 @@ namespace Object {
             unsigned int VBO;
             unsigned int EBO;
             unsigned int indexCount;
-            unsigned int vertexSize;
-            unsigned int indexSize;
         public:
             DataObject(shader::VertexLayout layout, const std::vector<float>& vertices, const std::vector<unsigned int>& indices) : VAO(0), VBO(0), EBO(0), indexCount(indices.size()) {
                 glGenVertexArrays(1, &VAO);
@@ -34,23 +32,20 @@ namespace Object {
                     glEnableVertexAttribArray(loc);
                 }
 
-                vertexSize = vertices.size() * sizeof(float);
-                indexSize = indices.size() * sizeof(unsigned int);
-
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
                 glBindVertexArray(0);
             }
 
             void bind(std::vector<float> vertices) {
                 glBindBuffer(GL_ARRAY_BUFFER, VBO);
-                glBufferData(GL_ARRAY_BUFFER, vertexSize, 0, GL_DYNAMIC_DRAW);
-                glBufferSubData(GL_ARRAY_BUFFER, 0, vertexSize, vertices.data());
+                glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
             }
 
             void bind(std::vector<unsigned int> indices) {
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize, 0, GL_DYNAMIC_DRAW);
-                glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indexSize, indices.data());
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+
+                indexCount = indices.size();
             }
 
             // needs you to use glUseProgram(shaderProgram) before calling draw()
