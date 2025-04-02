@@ -62,12 +62,6 @@ int main()
         0, 3, 4
     };
 
-    object::DisplayObject object;
-    object.bind(vertexLayout, vertices, indices);
-
-    object::DisplayObject object2;
-    object2.bind(vertexLayout, vertices, indices2);
-
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(window))
     {
@@ -77,8 +71,6 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
-        object.draw();
-        object2.draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
