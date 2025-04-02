@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "shader.hpp"
+#include "texture.hpp"
 #include "object.hpp"
 
 #include <iostream>
@@ -44,33 +45,53 @@ int main()
     std::string fragmentCode = shader::getShaderCode("shaders/fragment.fs");
 
     unsigned int shaderProgram = shader::createShaderProgram(vertexCode.c_str(), fragmentCode.c_str());
-    auto vertexLayout = shader::parseVertexShaderCode(vertexCode.c_str());
+    shader::VertexLayout vertexLayout = shader::parseVertexShaderCode(vertexCode.c_str());
 
     std::vector<float> vertices = {
+        -1.0f, -1.0f, 1.0f, 0.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+        1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+    };
+
+    std::vector<float> vertices2 = {
         -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-         0.0f,  0.5f, 0.0f, 0.0f, 1.0f,
-        -1.0f, -1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f, -1.0f, 1.0f, 1.0f, 1.0f,
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+        0.0f,  0.5f, 0.0f, 0.0f, 1.0f,
+        -1.0f,  1.0f, 1.0f, 1.0f, 1.0f,
     };
 
     std::vector<unsigned int> indices = {
-        0, 1, 2
+        0, 4, 1,
+        1, 4, 2,
+        2, 4, 3,
+        3, 4, 0
     };
 
     std::vector<unsigned int> indices2 = {
-        0, 3, 4
+        0, 1, 2,
+        1, 2, 3
     };
 
+    Object::Object triangle(vertexLayout, vertices, indices);
+    triangle.setShaderProgram(shaderProgram);
+
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    bool set = false;
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        glUseProgram(shaderProgram);
+        
+        triangle.draw();
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !set) {
+            triangle.bind(vertices2);
+            triangle.bind(indices2);
+            set = true;
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -82,8 +103,22 @@ int main()
 
 void processInput(GLFWwindow *window)
 {
+    static bool wasWDown = false;
+    static bool isWireframe = false;
+
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    
+    bool isWDown = glfwGetKey(window, GLFW_KEY_W);
+    if (isWDown && !wasWDown) {
+        isWireframe = !isWireframe;
+        if (isWireframe) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        } else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }
+    }
+    wasWDown = isWDown;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
