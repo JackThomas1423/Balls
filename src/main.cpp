@@ -48,21 +48,21 @@ int main()
     shader::VertexLayout vertexLayout = shader::parseVertexShaderCode(vertexCode.c_str());
 
     std::vector<float> vertices = {
-        -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-        1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-        0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f
+        // positions       // color           // texture coords
+        0.5f, 0.5f,        1.0f, 0.0f, 0.0f,  1.0f, 1.0f, // top right
+        0.5f, -0.5f,       1.0f, 1.0f, 0.0f,  1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f,      0.0f, 1.0f, 0.0f,  0.0f, 0.0f, // bottom left
+        -0.5f, 0.5f,       0.0f, 0.0f, 1.0f,  0.0f, 1.0f  // top left
     };
 
     std::vector<unsigned int> indices = {
-        0, 4, 1,
-        1, 4, 2,
-        2, 4, 3,
-        3, 4, 0
+        0, 1, 3, // first triangle
+        1, 2, 3  // second triangle
     };
 
-    Object::Texture texture(vertexLayout, shaderProgram, vertices, indices, "src/tomato.png");
+    Object::Texture texture(vertexLayout, shaderProgram, vertices, indices, "src/tomato.jpg");
+
+    glUniform1i(glGetUniformLocation(shaderProgram, "ourTexture"), 0);
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(window))
