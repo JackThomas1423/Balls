@@ -60,11 +60,10 @@ int main()
         1, 2, 3  // second triangle
     };
 
-    Object::Texture texture(vertexLayout, shaderProgram, vertices, indices, "src/tomato.jpg");
+    Object::Texture texture(vertexLayout, shaderProgram, vertices, indices, "src/tomato.png");
+    //glUseProgram(texture.getShaderProgram());
+    //glUniform1i(glGetUniformLocation(texture.getShaderProgram(), "ourTexture"), 0);
 
-    glUniform1i(glGetUniformLocation(shaderProgram, "ourTexture"), 0);
-
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
@@ -72,6 +71,7 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
+
         texture.draw();
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
             texture.bind(vertices);
