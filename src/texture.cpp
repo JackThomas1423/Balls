@@ -13,10 +13,9 @@ unsigned int texture::loadTexture(const char* path, GLenum drawMethod, GLenum pi
 
     // Load and generate the texture
     int width, height, nrChannels;
-    unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 4);
     if (data) {
-        GLenum format = (nrChannels == 1) ? GL_RED : (nrChannels == 3) ? GL_RGB : GL_RGBA;
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
         std::cout << "Failed to load texture: " << path << std::endl;
@@ -24,10 +23,6 @@ unsigned int texture::loadTexture(const char* path, GLenum drawMethod, GLenum pi
     stbi_image_free(data);
 
     return textureID;
-}
-
-void texture::bindTexture(unsigned int textureID) {
-    glBindTexture(GL_TEXTURE_2D, textureID);
 }
 
 void texture::unbindTexture() {

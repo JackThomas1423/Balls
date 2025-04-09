@@ -1,5 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "shader.hpp"
 #include "texture.hpp"
 #include "object.hpp"
@@ -61,8 +66,16 @@ int main()
     };
 
     Object::Texture texture(vertexLayout, shaderProgram, vertices, indices, "src/tomato.png");
-    //glUseProgram(texture.getShaderProgram());
-    //glUniform1i(glGetUniformLocation(texture.getShaderProgram(), "ourTexture"), 0);
+    unsigned int ourTexture = glGetUniformLocation(texture.getShaderProgram(), "ourTexture");
+    std::cout << "ourTexture: " << ourTexture << std::endl;
+    glUniform1i(ourTexture, 0);
+
+    glm::mat4 transform = glm::mat4(1.0f);
+    transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
+    transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+    unsigned int transformLoc = glGetUniformLocation(texture.getShaderProgram(), "transform");
+    std::cout << "transformLoc: " << transformLoc << std::endl;
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
     while (!glfwWindowShouldClose(window))
     {
@@ -70,13 +83,8 @@ int main()
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        
 
         texture.draw();
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-            texture.bind(vertices);
-            vertices[0] += 0.001f;
-        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();

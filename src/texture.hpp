@@ -6,7 +6,6 @@
 
 namespace texture {
     unsigned int loadTexture(const char* path, GLenum drawMethod, GLenum pixelFormat);
-    void bindTexture(unsigned int textureID);
     void unbindTexture();
     void deleteTexture(unsigned int textureID);
 };
