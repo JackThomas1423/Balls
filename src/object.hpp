@@ -1,8 +1,69 @@
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 #include "shader.hpp"
 #include "texture.hpp"
 
 namespace Object {
+
+    struct Mesh {
+        glm::vec3 position;
+        glm::vec3 rotation;
+        glm::vec3 scale;
+        std::vector<glm::vec3> vertices;
+        std::vector<unsigned int> indices;
+
+        std::vector<float> vertexData() {
+            std::vector<float> data;
+            for (const auto& vertex : vertices) {
+                data.push_back(vertex.x);
+                data.push_back(vertex.y);
+                data.push_back(vertex.z);
+                data.push_back(1.0f);
+                data.push_back(0.0f);
+                data.push_back(0.0f);
+            }
+            return data;
+        }
+
+        std::vector<unsigned int> indexData() { return indices; }
+
+    };
+
+    namespace Shape {
+        Mesh createSphere(float radius, int numSegments) {
+            std::vector<glm::vec3> vertices;
+            std::vector<unsigned int> indices;
+
+            float pi = acos(-1.0f);
+            for (int i = 0; i <= numSegments; ++i) {
+                float phi = pi * i / numSegments;
+                for (int j = 0; j <= numSegments; ++j) {
+                    float theta = 2 * pi * j / numSegments;
+                    glm::vec3 vertex(
+                        radius * sin(phi) * cos(theta),
+                        radius * sin(phi) * sin(theta),
+                        radius * cos(phi)
+                    );
+                    vertices.push_back(vertex);
+                }
+            }
+            for (int i = 0; i < numSegments; ++i) {
+                for (int j = 0; j < numSegments; ++j) {
+                    unsigned int first = i * (numSegments + 1) + j;
+                    unsigned int second = first + numSegments + 1;
+
+                    indices.push_back(first);
+                    indices.push_back(second);
+                    indices.push_back(first + 1);
+
+                    indices.push_back(second);
+                    indices.push_back(second + 1);
+                    indices.push_back(first + 1);
+                }
+            }
+            return Mesh { glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(1.0f), vertices, indices };
+        }
+    }
 
     class Camera {
         private:
@@ -28,14 +89,6 @@ namespace Object {
             glm::mat4 getViewMatrix() { return glm::lookAt(position, position + front, up); }
             glm::mat4 getProjectionMatrix(float aspectRatio) { return glm::perspective(glm::radians(fov), aspectRatio, 0.1f, 100.0f); }
             glm::mat4 getProjectionMatrix(float aspectRatio, float nearPlane, float farPlane) { return glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane); }
-
-            /*inline void moveForward(float speed) { position += speed * front; }
-            inline void moveBackward(float speed) { position -= speed * front; }
-            inline void moveLeft(float speed) { position -= glm::normalize(glm::cross(front, up)) * speed; }
-            inline void moveRight(float speed) { position += glm::normalize(glm::cross(front, up)) * speed; }
-            inline void moveUp(float speed) { position += speed * up; }
-            inline void moveDown(float speed) { position -= speed * up; }
-            */
     };
 
     // DataObject class used to encapsulate the OpenGL VAO, VBO, and EBO for rendering

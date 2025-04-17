@@ -68,7 +68,6 @@ int main()
     unsigned int floorShaderProgram = shader::createShaderProgram(floorVertexCode.c_str(), floorFragmentCode.c_str());
     shader::VertexLayout vertexLayout = shader::parseVertexShaderCode(vertexCode.c_str());
     shader::VertexLayout floorVertexLayout = shader::parseVertexShaderCode(floorVertexCode.c_str());
-    std::cout << "Vertex Layout: " << floorVertexLayout.location(0) << std::endl;
 
     std::vector<float> vertices = {
     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -131,7 +130,7 @@ int main()
 
     // Square vertices 4x4 grid mesh mini
     std::vector<float> floorVertices = {
-        -1.0f, -1.0f, 0.0f,    1.0f, 0.0f, 0.0f,  // Bottom-left (Red)
+    -1.0f, -1.0f, 0.0f,    1.0f, 0.0f, 0.0f,  // Bottom-left (Red)
     -0.5f, -1.0f, 0.0f,    0.0f, 1.0f, 0.0f,  // Bottom-center-left (Green)
     0.0f, -1.0f, 0.0f,     0.0f, 0.0f, 1.0f,  // Bottom-center-right (Blue)
     0.5f, -1.0f, 0.0f,     1.0f, 1.0f, 0.0f,  // Bottom-right (Yellow)
@@ -184,8 +183,16 @@ int main()
     18, 19, 23, 19, 24, 23   // Sixteenth quad
     };
 
+    Object::Mesh sphereMesh = Object::Shape::createSphere(0.5f, 35);
+
+    std::vector<unsigned int> sphereIndices = sphereMesh.indexData();
+    std::vector<float> sphereVertices = sphereMesh.vertexData();
+
+
     Object::DataObject floor(floorVertexLayout, floorShaderProgram, floorVertices, floorIndices);
+    Object::DataObject sphere(floorVertexLayout, floorShaderProgram, sphereVertices, sphereIndices);
     Object::Texture texture(vertexLayout, shaderProgram, vertices, indices, "src/linus2.jpeg");
+
     glUseProgram(texture.getShaderProgram());
     unsigned int ourTexture = glGetUniformLocation(texture.getShaderProgram(), "ourTexture");
     glUniform1i(ourTexture, 0);
@@ -244,6 +251,8 @@ int main()
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
         floor.draw();
+
+        sphere.draw();
 
         glUniformMatrix4fv(floorProjectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(floorViewLoc, 1, GL_FALSE, glm::value_ptr(view));
